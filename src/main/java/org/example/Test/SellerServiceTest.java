@@ -1,9 +1,7 @@
 package org.example.Test;
 
 import org.example.Exception.SellerException;
-import org.example.Model.Product;
 import org.example.Model.Seller;
-import org.example.Service.ProductService;
 import org.example.Service.SellerService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,16 +10,12 @@ import org.junit.Test;
 import java.util.List;
 
 public class SellerServiceTest {
-    ProductService productService;
     SellerService sellerService;
 
 
     @Before
-    public void setup() throws SellerException {
+    public void setup() {
         sellerService = new SellerService();
-
-
-
     }
     @Test
     public void getAllEmpty(){
