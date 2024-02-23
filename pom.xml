@@ -44,6 +44,12 @@
             <artifactId>h2</artifactId>
             <version>2.1.214</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.9.0</version>
+        </dependency>
     </dependencies>
 
 </project>

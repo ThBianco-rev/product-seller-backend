@@ -1,15 +1,15 @@
 package org.example.Model;
 
 public class Product {
-    private Integer id;
+    private int id;
     private String name;
-    private Integer price;
-    private String sellerName;
+    private int price;
+    private int seller;
 
     public Product() {
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -25,20 +25,19 @@ public class Product {
         this.name = name;
     }
 
-    public Integer getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
-    public String getSellerName() {
-        return sellerName;
+    public int getSeller(){
+        return seller;
     }
-
-    public void setSellerName(String sellerName) {
-        this.sellerName = sellerName;
+    public void setSeller(int seller_id){
+        this.seller = seller_id;
     }
 
     @Override
@@ -47,7 +46,7 @@ public class Product {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +
-                ", sellerName='" + sellerName + '\'' +
+                ", sellerId='" + seller + '\'' +
                 '}';
     }
 }

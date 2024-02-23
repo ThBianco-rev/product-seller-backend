@@ -1,5 +1,6 @@
 package org.example.Service;
 
+import org.example.DAO.SellerDAO;
 import org.example.Exception.SellerException;
 import org.example.Main;
 import org.example.Model.Seller;
@@ -10,15 +11,22 @@ public class SellerService {
 
     Set<String> sellerNames;
     List<Seller> sellerList;
+    SellerDAO sellerDAO;
 
-    public SellerService(){
+    public SellerService(SellerDAO sellerDAO){
+        this.sellerDAO = sellerDAO;
         sellerList = new ArrayList<>();
         sellerNames = new LinkedHashSet<>();
         Main.log.info("New Seller List created");
     }
     public List<Seller> getAllSellers(){
+        List<Seller> sellerList = sellerDAO.getaAllSellers();
         Main.log.info("Seller List returned: " + sellerList);
         return sellerList;
+    }
+
+    public Seller getSellerById(int id){
+        return sellerDAO.getSellerById(id);
     }
 
     public void insertSeller(Seller seller) throws SellerException {
@@ -26,19 +34,15 @@ public class SellerService {
             Main.log.warn("Seller name is empty");
             throw new SellerException("Seller name is empty");
         }
-        if(isDuplicate(seller.getName())){
-            Main.log.warn("Seller already exists: " + seller.getName());
-            throw new SellerException("Seller already exists: " + seller.getName());
+        try{
+            sellerDAO.insertSeller(seller);
+
+        }catch (SellerException e){
+            Main.log.warn(e.getMessage());
         }
-        sellerList.add(seller);
-        sellerNames.add(seller.getName());
-        Main.log.info("Seller added: " + seller);
     }
 
-    public boolean isDuplicate (String name){
-        for (String seller : sellerNames) {
-            if(name.equalsIgnoreCase(seller)) return true;
-        }
-        return false;
+    public boolean isVerifiedSeller(int sellerId){
+        return sellerDAO.isVerifiedSeller(sellerId);
     }
 }

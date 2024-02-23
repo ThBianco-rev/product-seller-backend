@@ -1,5 +1,7 @@
 package org.example.Test;
 
+import org.example.DAO.ProductDAO;
+import org.example.DAO.SellerDAO;
 import org.example.Exception.ProductException;
 import org.example.Exception.ProductNotFoundException;
 import org.example.Exception.SellerException;
@@ -7,29 +9,46 @@ import org.example.Model.Product;
 import org.example.Model.Seller;
 import org.example.Service.ProductService;
 import org.example.Service.SellerService;
+import org.example.Util.ConnectionSingleton;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
+import static org.mockito.Mockito.*;
+
+import java.sql.Connection;
 import java.util.List;
 
 public class ProductServiceTest {
+    @Mock
     ProductService productService;
-    SellerService sellerService;
+    @Mock
+    ProductDAO productDAO;
+
     Seller testSeller;
 
+    @Mock
+    Connection conn;
+    @Mock
+    SellerDAO sellerDAO;
+    @Mock
+    SellerService sellerService;
+    @Mock
+    Seller seller;
 
     @Before
     public void setup() throws SellerException {
-        productService = new ProductService();
-        sellerService = new SellerService();
-
-        testSeller = new Seller();
-        testSeller.setName("Tommy Wiseau");
-        sellerService.insertSeller(testSeller);
-
-        // Dependency injection to simulate what happens in the controller
+        conn = ConnectionSingleton.getConnection();
+        ConnectionSingleton.resetTestDatabase();
+        sellerDAO = new SellerDAO(conn);
+        sellerService = new SellerService(sellerDAO);
+        productDAO = new ProductDAO(conn);
+        productService = new ProductService(productDAO);
         productService.sellerService = sellerService;
+
+        testSeller = new Seller(7, "Tommy Wiseau");
+        sellerService.insertSeller(testSeller);
     }
 
     @Test
@@ -41,13 +60,12 @@ public class ProductServiceTest {
     @Test
     public void insertProduct(){
         String name = "Football";
-        Integer price = 15;
-        String sellerName = "Tommy Wiseau";
+        int price = 15;
 
         Product testProduct = new Product();
         testProduct.setName(name);
         testProduct.setPrice(price);
-        testProduct.setSellerName(sellerName);
+        testProduct.setSeller(7);
 
         try{
             productService.insertProduct(testProduct);
@@ -61,19 +79,18 @@ public class ProductServiceTest {
         Assert.assertTrue(actual.getId() > 0);
         Assert.assertEquals(name, actual.getName());
         Assert.assertEquals(price, actual.getPrice());
-        Assert.assertEquals(sellerName, actual.getSellerName());
+        Assert.assertEquals(testSeller.getId(), actual.getSeller());
     }
 
     @Test
     public void insertProductEmptyName(){
         String name = "";
-        Integer price = 15;
-        String sellerName = "Tommy Wiseau";
+        int price = 15;
 
         Product testProduct = new Product();
         testProduct.setName(name);
         testProduct.setPrice(price);
-        testProduct.setSellerName(sellerName);
+        testProduct.setSeller(7);
 
         try{
             productService.insertProduct(testProduct);
@@ -86,13 +103,12 @@ public class ProductServiceTest {
     @Test
     public void insertProductNegativePrice(){
         String name = "Football";
-        Integer price = -15;
-        String sellerName = "Tommy Wiseau";
+        int price = -15;
 
         Product testProduct = new Product();
         testProduct.setName(name);
         testProduct.setPrice(price);
-        testProduct.setSellerName(sellerName);
+        testProduct.setSeller(7);
 
         try{
             productService.insertProduct(testProduct);
@@ -105,13 +121,12 @@ public class ProductServiceTest {
     @Test
     public void insertProductInvalidSeller(){
         String name = "Football";
-        Integer price = 15;
-        String sellerName = "Bon Jovi";
+        int price = 15;
 
         Product testProduct = new Product();
         testProduct.setName(name);
         testProduct.setPrice(price);
-        testProduct.setSellerName(sellerName);
+        testProduct.setSeller(3);
 
         try{
             productService.insertProduct(testProduct);
@@ -141,7 +156,6 @@ public class ProductServiceTest {
         insertProduct();
 
         List<Product> productList = productService.getAllProducts();
-        int id = productList.get(0).getId();
 
         try{
             productService.getProductById(42);
@@ -155,53 +169,46 @@ public class ProductServiceTest {
     public void updateProduct(){
 
         String name = "Gun";
-        Integer price = 2000;
-        String sellerName = "Tommy Wiseau";
+        int price = 2000;
 
         Product testProduct = new Product();
         testProduct.setName(name);
         testProduct.setPrice(price);
-        testProduct.setSellerName(sellerName);
+        testProduct.setSeller(7);
 
         insertProduct();
-
         List<Product> productList = productService.getAllProducts();
-        int id = productList.get(0).getId();
-
-        try{
-            productService.updateProduct(id,testProduct);
+        testProduct.setId(productList.get(0).getId());
+       try{
+            productService.updateProduct(testProduct);
 
         } catch (ProductException e) {
             e.printStackTrace();
             Assert.fail();
         }
-
+        productList = productService.getAllProducts();
         Product actual = productList.get(0);
         Assert.assertTrue(actual.getId() > 0);
         Assert.assertEquals(name, actual.getName());
         Assert.assertEquals(price, actual.getPrice());
-        Assert.assertEquals(sellerName, actual.getSellerName());
+        Assert.assertEquals(testSeller.getId(), actual.getSeller());
     }
 
     @Test
     public void updateProductEmptyName(){
 
         String name = "";
-        Integer price = 2000;
-        String sellerName = "Tommy Wiseau";
+        int price = 2000;
 
         Product testProduct = new Product();
         testProduct.setName(name);
         testProduct.setPrice(price);
-        testProduct.setSellerName(sellerName);
+        testProduct.setSeller(7);
 
         insertProduct();
 
-        List<Product> productList = productService.getAllProducts();
-        int id = productList.get(0).getId();
-
         try{
-            productService.updateProduct(id,testProduct);
+            productService.updateProduct(testProduct);
             Assert.fail();
 
         } catch (ProductException e) {
@@ -213,21 +220,17 @@ public class ProductServiceTest {
     public void updateProductNegativePrice(){
 
         String name = "Gun";
-        Integer price = -2000;
-        String sellerName = "Tommy Wiseau";
+        int price = -2000;
 
         Product testProduct = new Product();
         testProduct.setName(name);
         testProduct.setPrice(price);
-        testProduct.setSellerName(sellerName);
+        testProduct.setSeller(7);
 
         insertProduct();
 
-        List<Product> productList = productService.getAllProducts();
-        int id = productList.get(0).getId();
-
         try{
-            productService.updateProduct(id,testProduct);
+            productService.updateProduct(testProduct);
             Assert.fail();
 
         } catch (ProductException e) {
@@ -239,26 +242,29 @@ public class ProductServiceTest {
     public void updateProductInvalidSeller(){
 
         String name = "Gun";
-        Integer price = 2000;
-        String sellerName = "Mark";
+        int price = 2000;
 
         Product testProduct = new Product();
         testProduct.setName(name);
         testProduct.setPrice(price);
-        testProduct.setSellerName(sellerName);
+        testProduct.setSeller(79);
 
         insertProduct();
-
         List<Product> productList = productService.getAllProducts();
-        int id = productList.get(0).getId();
+        testProduct.setId(productList.get(0).getId());
 
         try{
-            productService.updateProduct(id,testProduct);
-            Assert.fail();
+            productService.updateProduct(testProduct);
 
         } catch (ProductException e) {
             e.printStackTrace();
         }
+        productList = productService.getAllProducts();
+        Product actual = productList.get(0);
+        Assert.assertTrue(actual.getId() > 0);
+        Assert.assertEquals("Football", actual.getName());
+        Assert.assertEquals(15, actual.getPrice());
+        Assert.assertEquals(7, actual.getSeller());
     }
 
     @Test
@@ -275,7 +281,7 @@ public class ProductServiceTest {
             e.printStackTrace();
             Assert.fail();
         }
-
+        productList = productService.getAllProducts();
         Assert.assertTrue(productList.isEmpty());
     }
 }
