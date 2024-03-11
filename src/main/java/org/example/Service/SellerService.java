@@ -39,6 +39,7 @@ public class SellerService {
 
         }catch (SellerException e){
             Main.log.warn(e.getMessage());
+            throw new SellerException(e.getMessage());
         }
     }
 
