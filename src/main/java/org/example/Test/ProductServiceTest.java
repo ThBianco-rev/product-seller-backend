@@ -78,7 +78,7 @@ public class ProductServiceTest {
         Product actual = productList.get(0);
         Assert.assertTrue(actual.getId() > 0);
         Assert.assertEquals(name, actual.getName());
-        Assert.assertEquals(price, actual.getPrice());
+        Assert.assertEquals(price, actual.getPrice(), 0.00);
         Assert.assertEquals(testSeller.getId(), actual.getSeller());
     }
 
@@ -190,7 +190,7 @@ public class ProductServiceTest {
         Product actual = productList.get(0);
         Assert.assertTrue(actual.getId() > 0);
         Assert.assertEquals(name, actual.getName());
-        Assert.assertEquals(price, actual.getPrice());
+        Assert.assertEquals(price, actual.getPrice(), 0.00);
         Assert.assertEquals(testSeller.getId(), actual.getSeller());
     }
 
@@ -263,7 +263,7 @@ public class ProductServiceTest {
         Product actual = productList.get(0);
         Assert.assertTrue(actual.getId() > 0);
         Assert.assertEquals("Football", actual.getName());
-        Assert.assertEquals(15, actual.getPrice());
+        Assert.assertEquals(15, actual.getPrice(), 0.00);
         Assert.assertEquals(7, actual.getSeller());
     }
 

@@ -24,7 +24,7 @@ public class ProductDAO {
                     "values (?, ?, ?, ?)");
             ps.setInt(1, p.getId());
             ps.setString(2, p.getName());
-            ps.setInt(3, p.getPrice());
+            ps.setDouble(3, p.getPrice());
             ps.setInt(4, p.getSeller());
             ps.executeUpdate();
         }catch(SQLException e){
@@ -40,7 +40,7 @@ public class ProductDAO {
             while(rs.next()){
                 int productId = rs.getInt("product_id");
                 String name = rs.getString("name");
-                int price = rs.getInt("price");
+                double price = rs.getDouble("price");
                 int sellerName = rs.getInt("seller");
                 Product p = new Product();
                 p.setId(productId);
@@ -64,7 +64,7 @@ public class ProductDAO {
             if(rs.next()){
                 int productId = rs.getInt("product_id");
                 String name = rs.getString("name");
-                int price = rs.getInt("price");
+                double price = rs.getDouble("price");
                 int sellerName = rs.getInt("seller");
                 Product p = new Product();
                 p.setId(productId);
@@ -87,7 +87,7 @@ public class ProductDAO {
                     "WHERE product_id = ?");
 
             ps.setString(1, newProduct.getName());
-            ps.setInt(2, newProduct.getPrice());
+            ps.setDouble(2, newProduct.getPrice());
             ps.setInt(3, newProduct.getSeller());
             ps.setInt(4, newProduct.getId());
             ps.executeUpdate();

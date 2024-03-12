@@ -7,7 +7,7 @@ CREATE TABLE Seller (
 CREATE TABLE Product (
     product_id int primary key,
     name varchar(255) not null,
-    price int,
+    price double,
     seller int references Seller(seller_id)
 );
 --INSERT INTO Seller (seller_id, name)
